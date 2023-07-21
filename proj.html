@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset='utf-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1'>
+    <meta http-equiv='X-UA-Compatible' content='IE=edge'>
+    <title>Waiter App</title>
+    
+
+</head>
+
+<body>
+    <section class="bookingApp">
+        <form id="myform" >
+
+            <label for="amount">Amount: </label>
+            <input type="text" id="amount">
+            <br>
+            <label for="disp">Item: </label>
+            <input type="text" id="item">
+            <br>
+            <label for="categry">Table No: </label>
+            <select id="change">
+                <option>Select</option>
+                <option> Table1</option>
+                <option>Table2</option>
+                <option>Table3</option>
+            </select>
+            <br>
+            <input class="btn"  value="Submit" type="submit"  id="submit">
+        </form>
+            <h2> Orders</h2>
+            <h4 id="tbl1">Table 1</h4>
+            <h4 id="tbl2">Table 2</h4>
+            <h4 id="tbl3">Table 3</h4>
+
+        
+        <ul id="details"></ul>
+    </section>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/1.4.0/axios.min.js"></script>
+    
+    <script>
+
+       document.getElementById('submit').addEventListener('click', saveToCrud);
+
+       async function saveToCrud(event) {
+        try {
+            event.preventDefault()
+
+            const Amounts = document.getElementById('amount').value;
+            const Items = document.getElementById('item').value;
+            const Category = document.getElementById('change').value;
+            //const catgry1 = document.getElementById('change');
+            //let form=document.forms['myform']
+            //let menu = form.change;
+            //console.dir(menu)
+            const object = {
+                Amounts,
+                Items,
+                Category
+            }
+
+        let response = await axios.post("https://crudcrud.com/api/cfe3a1d216d447db897ff872a533748b/SavingInfo", object)
+               
+                    showOrderOnScreen(response.data)
+        }
+        catch(err) {
+                    console.log(err)
+                }
+            
+}
+
+        window.addEventListener("DOMContentLoaded", async() => {
+            try{
+                let response = await axios.get("https://crudcrud.com/api/cfe3a1d216d447db897ff872a533748b/SavingInfo")
+               
+                    for (let i = 0; i < response.data.length; i++){
+                        showOrderOnScreen(response.data[i])
+                    }
+                
+        }
+        catch(err){
+            console.log("error", err)
+        }
+})
+    
+
+  function showOrderOnScreen(item) {
+      console.log(item);
+          
+      let parentNode;
+
+      if (item.Category == "Table1") {
+           parentNode = document.getElementById("tbl1")
+      } else if (item.Category == "Table2") {
+           parentNode = document.getElementById("tbl2")
+      } else if (item.Category == "Table3") {
+           parentNode = document.getElementById("tbl3")
+      }
+
+        const childHtml2 = `<li id=${item._id}> ${item.Amounts} - ${item.Items} - ${item.Category}
+                                 <button onclick=deleteItem('${item._id}')> Delete Item </button>
+                            </li> `;
+        parentNode.innerHTML = parentNode.innerHTML + childHtml2;
+        
+}
+        
+        
+
+    async  function deleteItem(itemId) {
+            console.log(itemId)
+            try{ 
+                 await axios.delete(`https://crudcrud.com/api/cfe3a1d216d447db897ff872a533748b/SavingInfo/${itemId}`)
+                 removeItemFromScreen(itemId);
+                   
+            }
+                catch(err)  {
+                    console.log("error", err)
+                }
+}
+
+    
+
+       function removeItemFromScreen(itemId) {
+             
+            const parentEle1 = document.getElementById('tbl1');
+            const childDelete1 = document.getElementById(itemId);
+            if (childDelete1) {
+                childDelete1.remove()
+            }
+            const parentEle2 = document.getElementById('tbl2');
+            const childDelete2 = document.getElementById(itemId);
+            if (childDelete2) {
+                childDelete2.remove()
+            }
+            const parentEle3 = document.getElementById('tbl3');
+            const childDelete3 = document.getElementById(itemId);
+            if (childDelete3) {
+                childDelete3.remove()
+            }
+}
+
+    </script>
+
+</body>
+
+</html>
